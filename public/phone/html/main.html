@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>微数据大视野</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/dataui.css" />
+	<style>
+
+		ul{
+			margin-bottom: 10px;
+		}
+		ul li{ 
+			margin: 5px 10px;
+			padding: 5px;
+			color: #000;
+			word-wrap: break-word;
+		}
+	</style>
+</head>
+<body onload='init();' allowtransparency="true" style='background-color: transparent;overflow:hidden;'>
+	<div id='divback' style='position:fixed;left:0px;top:0px;width:100%;height:100%;z-index: -1'>
+		<img id='background' src="../image/background.jpg" style="width:100%;height:100%"/>
+	</div>
+	<div id="header" class="winHeader"></div>
+	<button id="btnLeft" class="winButton" onclick="dui.curWindow.close();" style='left:0px;top:18px;display:none' >返回</button>
+	<div id="winTitle" class="winTitle">微数据 大视野</div>
+	<button id="btnRight" class="winButton" onclick="setting();" style='right:0px;top:18px'>设置</button>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../script/common/touchevent.js"></script>
+<script type="text/javascript" src="../script/common/metadata.js"></script>
+<script type="text/javascript" src="../script/common/DataUI.js"></script>
+<script type="text/javascript" src="../script/common/service.js"></script>
+<script type="text/javascript" src="../script/common/jquery-weui.js"></script>
+<script type="text/javascript" src="../script/winMain.js"></script>
+<script type="text/javascript" src="../script/winFlow.js"></script>
+<script type="text/javascript" src="../script/winData.js"></script>
+<script type="text/javascript" src="../script/winList.js"></script>
+<script type="text/javascript" src="../script/winSelect.js"></script>
+<script type="text/javascript" src="../script/winInput.js"></script>
+<script type="text/javascript" src="../script/winCusFlow.js"></script>
+<script type="text/javascript" src="../script/winSetting.js"></script>
+<script type="text/javascript" src="../script/winMsg.js"></script>
+<script type="text/javascript" src="../script/winImage.js"></script>
+<script type="text/javascript">
+	
+	var winMain;
+	var ajpush;
+	var data_UI;
+	var data_Scheme={};
+	var dataService;
+	var shareService;
+	var loginService;
+	var weiXin;
+	var loginUser = localStorage.getItem("username");
+	var loginUserName;
+	function init(){
+	
+		var rtn={};
+		function back(){
+			if (rtn.loadService && rtn.loadUser){
+				loadMain();
+			}
+		}
+		
+		loadService(function(){
+			rtn.loadService=true;
+			back();
+		})
+		
+		var username=localStorage.getItem("username");
+		autoLogin(username,function(user){
+			rtn.loadUser=true;
+			loginUserName=user.name;
+			back();
+		});
+	}
+	function loadService(callback){
+		var rtn={};
+		function inited(){
+			if (!rtn.loadScheme) return;
+			if (!rtn.loadData) return;
+			if (!rtn.loadShare) return;
+			callback();
+		}
+		var scheme=serviceFactory.getService("Data.Scheme",function(){
+			scheme.getDataScheme(function(scheme){
+				data_Scheme=scheme;
+				initUIModel(data_Scheme);
+				rtn.loadScheme=true;
+				inited();
+			});
+		});
+		dataService=serviceFactory.getService("Data.DataService",function(){
+			rtn.loadData=true;
+			inited();
+		});
+		shareService=serviceFactory.getService("Data.ShareService",function(){
+			rtn.loadShare=true;
+			inited();
+		});
+	}
+	function autoLogin(username,callback){
+		
+		if (username){
+			loginService=serviceFactory.getService("login.Login",function(){
+				loginService.autoLogin(username,"","",function(){
+					loginService.getUserData(username,"",function(rtn){
+						callback(rtn.value);
+					});
+					console.log("test");
+					
+					
+				});
+			});
+		}
+	}
+	function loadMain(){
+		var dataMain={};
+		dataMain.id="winMain";
+		dataMain.title="微数据";
+		dicons=[];
+		dicons.push({id:"Receivable",name:"应收",money:0,data1:data_Scheme.Income,data2:data_Scheme.Invoice});
+		dicons.push({id:"Cash",name:"现金",money:0,data1:data_Scheme.Expenditure,data2:data_Scheme.Income});
+		dicons.push({id:"Payable",name:"应付",money:0,data1:data_Scheme.Purchase,data2:data_Scheme.Expenditure});
+		dicons.push({id:"Stock",name:"存货",money:0,data1:data_Scheme.Invoice,data2:data_Scheme.Purchase});
+		
+		dataMain.icons=dicons;
+
+		winMain=dui.openWindow(WinMain,dataMain);
+
+	}
+	function goBack(){
+		dui.goBack();
+	}
+	function weiXin_Share(title,content,url){
+		if (!inPhone){
+			alert(url);
+			return;
+		}
+		weiXin.sendRequest({
+		    scene: 'session',
+		    contentType: 'web_page',
+		    title: title,
+		    description: content,
+		    thumbUrl: 'widget://image/icon.png',
+		    contentUrl: urlServer+'/'+url
+		}, function(ret, err) {
+		    if (ret.status) {
+		        api.alert({ title: '发表微信', msg: '发表成功', buttons: ['确定'] });
+		    } else {
+		        api.alert({ title: '发表失败', msg: err.msg, buttons: ['确定'] });
+		    }
+		});
+	}
+	function weiXin_login(){
+		weiXin.auth(function(ret, err) {
+		    if (ret.status) {
+		        api.alert({ msg: ret.token });
+		    } else {
+		        api.alert({ msg: err.msg });
+		    }
+		});
+	}
+	function initjpush(){
+	
+		ajpush.setListener(
+		    function(ret){
+		         var id = ret.id;
+		         var title = ret.title;
+		         var content = ret.content;
+		         var extra = ret.extra;
+		         
+		         //这里处理的是纯粹的message类的透传消息，不处理手机通知类的消息，通过判断有没有title屏蔽。
+		         if (!title) return;
+		         
+		         $.confirm(ret.content,ret.title,function(){
+		         	
+		         	onNoticeClick(ret);
+		         	
+		         },null);
+		         //alert("listen:"+JSON.stringify(ret));
+		    }
+		);
+		ajpush.getRegistrationId(function(ret) {
+			var registrationId = ret.id;
+		    
+			var param = {alias:loginUser,tags:[loginUser]};
+			ajpush.bindAliasAndTags(param,function(ret) {
+			     var statusCode = ret.statusCode;
+			     //alert("jpush_bind:"+loginUser);
+			});
+		    
+		});
+	}
+	function onNoticeClick(msg){
+		var shareinfo = msg.extra;
+		//alert(JSON.stringify(shareinfo));
+		api.openFrame({
+            name: 'message',
+            url: 'share.html?sid='+shareinfo.id,
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bgColor: 'rgba(0,0,0,1)',
+        });
+	}
+    apiready = function(){
+		$("#header").show();
+		weiXin = api.require('weiXin');
+		weiXin.registerApp(
+		    function(ret, err) {
+		        if (ret.status) {
+		        	weiXin.inited=true;
+		        } else {
+		            alert(err.msg );
+		        }
+		    }
+		);
+		api.addEventListener({
+		    name: 'keyback'
+		}, function(ret, err) {
+		    var b=dui.goBack();
+		    if (b==false){
+		    	$.confirm("退出微数据？",function(){
+		    		api.closeWidget({silent:true});
+		    	},null);
+		    }
+		});
+		
+		ajpush = api.require('ajpush');
+		if (!ajpush) return;
+		
+		if (api.systemType=="ios"){
+			initjpush();
+			api.addEventListener({
+			    name: 'noticeclicked'
+			}, function(ret, err) {
+			    if (ret && ret.value) {
+			        var ajpush = ret.value;
+			        onNoticeClick(ajpush);
+			        var content = ajpush.content;
+			        var extra = ajpush.extra;
+			    }
+			})
+		}else{
+			ajpush.init(function(ret) {
+	            if (ret && ret.status){
+	                initjpush();
+	            }
+	        });
+	        api.addEventListener({
+			    name: 'appintent'
+			}, function(ret, err) {
+			    if (ret && ret.appParam.ajpush) {
+			        var ajpush = ret.appParam.ajpush;
+			        onNoticeClick(ajpush);
+			        var id = ajpush.id;
+			        var title = ajpush.title;
+			        var content = ajpush.content;
+			        var extra = ajpush.extra;
+			    }
+			})
+        }
+
+		//init();
+    	/*
+		var ver = api.version;
+		var sType = api.systemType;
+		var sVer = api.systemVersion;
+		var id = api.deviceId;
+		var model = api.deviceModel;
+		var name = api.deviceName;
+		var cType = api.connectionType;
+		var winName = api.winName;
+		var winWidth = api.winWidth;
+		var winHeight = api.winHeight;
+		var frameName = api.frameName || '';
+		var frameWidth = api.frameWidth || '';
+		var frameHeight = api.frameHeight || '';
+
+		var str = '<ul>';
+		str += '<li>引擎版本信息: ' + ver + '</li>';
+		str += '<li>系统类型: ' + sType + '</li>';
+		str += '<li>系统版本: ' + sVer + '</li>';
+		str += '<li>设备标识: ' + id + '</li>';
+		str += '<li>设备型号: ' + model + '</li>';
+		str += '<li>设备名称: ' + name + '</li>';
+		str += '<li>网络状态: ' + cType + '</li>';
+		str += '<li>主窗口名字: ' + winName + '</li>';
+		str += '<li>主窗口宽度: ' + winWidth + '</li>';
+		str += '<li>主窗口高度: ' + winHeight + '</li>';
+		str += '<li>子窗口名字: ' + frameName + '</li>';
+		str += '<li>子窗口宽度: ' + frameWidth + '</li>';
+		str += '<li>子窗口高度: ' + frameHeight + '</li>';
+		str += '</ul>';
+
+		$api.byId('sys-info').innerHTML = str;
+	*/
+    };
+</script>
+</html>

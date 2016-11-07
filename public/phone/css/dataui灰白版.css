@@ -1,0 +1,203 @@
+body {
+	font-size:14px;
+	overflow:hidden;
+}
+
+.winHeader{
+	position: fixed;
+	width:100%;
+	height:60px;
+	z-index:0;
+	background-color:rgba(250,250,250,0.4);
+	border:none;
+}
+.winButton{
+	position: absolute;
+	border-radius: 5px;
+	height:35px;
+	width:15%;
+	color:rgba(50,50,50,0.9);
+	margin:5px;
+	z-index:2;
+}
+.winTitle{
+	position: absolute;
+	left:20%;
+	width:60%;
+	height:35px;
+	line-height:35px;
+	color:rgba(50,50,50,0.9);
+	border-radius: 5px;
+	font-size: 20px; 
+	text-align:center;
+	top:15px;
+	margin-top:5px;
+
+}
+.cnode{
+	border-radius:100px;
+	background-color:rgba(250,250,250,0.3);
+	overflow:hidden;
+	border:solid 4px rgba(250,250,250,0.1);
+	text-align:center;
+}
+.cnode .title{
+	border:none;
+	border-radius:0px;
+	background-color:rgba(50,50,50,0.3);
+	color:rgba(250,250,250,0.9);
+	height:50%;
+	width:100%;
+}
+.cnode .content{
+	border:none;
+	border-radius:0px;
+	width:100%;
+	height:50%;
+	bottom:0px;
+	
+	background-color:rgba(250,250,250,0.4);
+	color:rgba(0,0,0,0.6);
+}
+.cnode .titlebottom{
+	border:none;
+	border-radius:0px;
+	width:100%;
+	bottom:0px;
+}
+.linex{
+	max-height:3px;
+	background-color:rgba(250,250,250,0.6);
+}
+.liney{
+	max-width:3px;
+	background-color:rgba(250,250,250,0.6);
+}
+.dbutton{
+	
+	border:3px solid rgba(50,50,50,0.1);
+	border-radius:5px;
+	overflow:hidden;
+	font-size:14px;
+	line-height:20px;
+	padding:2px;
+	padding-left:8px;
+	padding-right:8px;
+	min-height:30px;
+	text-align:center;
+	background-color:rgba(0,0,0,0.4);
+	color:rgba(250,250,250,0.8);
+}
+.dnode{
+	border-radius:5px;
+	border:5px solid rgba(250,250,250,0.2);
+	background-color:rgba(250,250,250,0.3);
+	color:rgba(50,50,50,0.8);
+	
+	line-height:25px;
+	padding:2px;
+	padding-left:8px;
+	padding-right:8px;
+	
+	text-align:center;
+	
+}
+.datanode{
+	border-radius:5px;
+    border: 3px solid rgba(50, 50, 50, 0.0980392);
+    color: rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 2px 8px;
+    text-align: left;
+    background-color: rgba(250, 250, 250, 0.4);
+}
+.sign{
+	border: 3px solid rgba(50, 50, 250, 0.2);
+}
+.share{
+	border: 3px solid rgba(50, 250, 50, 0.2);
+}
+.beshared{
+	border: 3px solid rgba(250, 50, 50, 0.3);
+}
+.dataform{
+	border-radius:10px;
+    border: 3px solid rgba(50, 50, 50, 0.0980392);
+    color: rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: left;
+    background-color: rgba(250, 250, 250, 0.4);
+}
+.dataform .title{
+	width: 100%;
+    height: 25px;
+    text-align: center;
+    padding: 5px;
+    color: rgba(50, 50, 50, 0.8);
+    font-size: 12px;
+    background-color: rgba(250, 250, 250, 0.6);
+}
+.dataform .bottom{
+	width: 100%;
+    height: 25px;
+    color: rgba(0, 0, 0, 0.498039);
+    text-align: center;
+    bottom: 2px;
+    background-color: rgba(250, 250, 250, 0.298039)
+}
+.text{
+	border-radius: 5px;
+    border: 1px solid rgba(50, 50, 50, 0.298039);
+    padding: 2px 2px 2px 8px;
+    font-size: 12px;
+    background-color: rgba(250, 250, 250, 0.6);
+}
+.listitem{
+	border-radius:5px;
+	margin:3px;
+	background-color:rgba(250,250,250,0.3);
+}
+.dataitem{
+	min-height: 25px;
+    padding: 5px;
+    border-radius:5px;
+    background-color: rgba(250, 250, 250, 0.3);
+    line-height:30px;
+}
+.listbutton{
+	border-radius:5px;
+	background-color:rgba(250,250,250,0.4);
+	line-height:30px;
+	padding-left:10px;
+	text-align: center;
+	overflow:hidden;
+}
+.timenode{
+	background-color:rgba(250,250,250,0.6);
+	border:3px solid rgba(250,250,250,0.1);
+	text-align:center;
+	color:rgba(0,0,0,0.5);
+	border-radius:20px;
+	font-size:12px;
+}
+.inputBox{
+	border-radius:5px;
+	border:5px solid rgba(250,250,250,0.2);
+	background-color:rgba(250,250,250,0.3);
+}
+.ddiv{
+	border-radius:5px;
+}
+.dlab{
+
+}
+.dpanel{
+
+}
+.dinput{
+
+}

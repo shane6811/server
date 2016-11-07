@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<widget id="A6925276251005" version="0.0.1"> 
+  <name>MicoData</name>  
+  <description>micodata</description>  
+  <author email="sunliangchao@163.com" href="http://www.micodata.net">Developer</author>  
+  <content src="index.html"/>  
+  <preference name="pageBounce" value="false"/>  
+  <preference name="appBackground" value="rgba(250,250,250,1.0)"/>  
+  <preference name="windowBackground" value="rgba(250,250,250,1.0)"/>  
+  <preference name="frameBackgroundColor" value="rgba(250,250,250,1.0)"/>  
+  <preference name="hScrollBarEnabled" value="true"/>  
+  <preference name="vScrollBarEnabled" value="true"/>  
+  <preference name="softInputMode" value="pan"/>  
+  <preference name="autoLaunch" value="true"/>  
+  <preference name="fullScreen" value="false"/>  
+  <preference name="autoUpdate" value="true"/>  
+  <preference name="smartUpdate" value="true"/>  
+  <preference name="userAgent" value="MicoData_Phone"/>  
+  <preference name="debug" value="true"/>  
+  <preference name="statusBarAppearance" value="true"/>  
+  <preference name="iOS7StatusBarAppearance" value="true"/>  
+  <permission name="readPhoneState"/>  
+  <permission name="camera"/>  
+  <permission name="record"/>  
+  <permission name="location"/>  
+  <permission name="fileSystem"/>  
+  <permission name="internet"/>  
+  <permission name="bootCompleted"/>  
+  <permission name="hardware"/>  
+  <permission name="contact"/>  
+  <permission name="call"/>  
+  <permission name="sms"/>  
+  <access origin="*"/>  
+  <feature name="ajpush">
+    <param name="app_key" value="297f0bf296106693d418a7d3" />
+    <param name="channel" value="001" />
+  </feature>
+  <feature name="weiXin"> 
+    <param name="urlScheme" value="wxf69f9be59b5b913d"/>  
+    <param name="apiKey" value="wxf69f9be59b5b913d"/>  
+    <param name="apiSecret" value="855df53812255eb97c327c66cf53dd55"/> 
+  </feature> 
+</widget>

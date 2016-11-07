@@ -1,0 +1,261 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>微数据大视野</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/dataui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+	<style>
+		
+		ul{
+			margin-bottom: 10px;
+		}
+		ul li{ 
+			margin: 5px 10px;
+			padding: 5px;
+			color: #000;
+			word-wrap: break-word;
+		}
+	</style>
+</head>
+<body onload='init();' allowtransparency="true" style='background-color: transparent;overflow:hidden;'>
+    
+	<div id='divback' style='position:fixed;left:0px;top:0px;width:100%;height:100%;z-index: -1'>
+		<img src="../image/background.jpg" style="width:100%;height:100%"/>
+	</div>
+	<div id="header" class="winHeader" style="display:none"></div>
+	<button id="btnLeft" class="winButton" onclick="openCusFlow();" style='left:0px;top:18px;display:none' >返回</button>
+	<div id="winTitle" class="winTitle" style="display:none">微数据 大视野</div>
+	<button id="btnRight" class="winButton" onclick="setting();" style='right:0px;top:18px;display:none'>设置</button>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../script/common/touchevent.js"></script>
+<script type="text/javascript" src="../script/common/metadata.js"></script>
+<script type="text/javascript" src="../script/common/DataUI.js"></script>
+<script type="text/javascript" src="../script/common/service.js"></script>
+<script type="text/javascript" src="../script/winMain.js"></script>
+<script type="text/javascript" src="../script/winFlow.js"></script>
+<script type="text/javascript" src="../script/winData.js"></script>
+<script type="text/javascript" src="../script/winShare.js"></script>
+<script type="text/javascript" src="../script/winCusFlow.js"></script>
+<script type="text/javascript" src="../script/common/jquery-weui.js"></script>
+
+<script type="text/javascript">
+	
+	var winshare;
+	var winCusFlow;
+	var windata;
+	
+	var data_UI={};
+	var dataInfo;
+	var data_Scheme={};
+	var dataService;
+	var shareService;
+	var loginService;
+	var weiXin;
+	var cameraTool;
+	var dPerson;
+	var req;
+	
+	function openCusFlow(){
+		
+		if (winshare) {
+			winshare.hide();
+			winshare.domNode.destroy();
+		}
+		data=dPerson.data;
+		dui.openWindow(WinCusFlow,data_UI[dPerson.dataInfo.id],dPerson,"");
+		window.setTimeout(function(){dPerson.onclick=null;},500); 
+		
+		var dwidth=document.documentElement.clientWidth;
+		var dheight=document.documentElement.clientHeight; 
+		var btnSign=dui.getDataDom("div","btnSign","dbutton",dwidth/6-20,dheight-40,dwidth/3,30,1);
+		btnSign.textContent="签字确认";
+		
+		var btnUnSign=dui.getDataDom("div","btnUnSign","dbutton",dwidth/2+20,dheight-40,dwidth/3,30,1);
+		btnUnSign.textContent="拒绝签字";
+		
+		btnSign.onclick=function(){signFlow(data,true)};
+		btnUnSign.onclick=function(){signFlow(data,false)};
+		btnSign.show();
+		btnUnSign.show();
+		//winCusFlow.onNewData=onCusDataNew;	
+		//winCusFlow.onDataEdit=onCusDataEdit;
+	}
+	function signFlow(person,sign){
+		
+		shareService.signDataFlow(dataInfo,person,sign,function(rtn){
+			alert(rtn.value);
+		});
+	}
+	function openFlowData(fromUser,toUser,dataInfo){
+		loginService.autoLogin(toUser,"","",function(rtn){
+			shareService.init(function(v){});
+			dataService=serviceFactory.getService("Data.DataService",function(){
+				
+				var ptype="";
+				var person=null;
+				var dataname=dataInfo.id;
+		        if (dataname=="Receivable" || dataname=="Income" || dataname=="Invoice" ) {
+		            ptype="Customer";
+		        }
+		        if (dataname=="Payable" || dataname=="Expenditure" || dataname=="Purchase" ) { 
+		            ptype="Supplier";
+		        }
+		        dataService.getDataByField(ptype,"phone",fromUser,function(rtn2){
+		        	var person=rtn2.value;
+		        	loadPersonData(ptype, person);
+					openCusFlow();
+		        })
+				
+			});
+			
+		});
+	};
+	
+	function openShareData(shareid){
+	
+		winshare=new WinShare();
+		var div=dui.getDataDom("div","divShareData","listitem",0,100,document.documentElement.clientWidth,100,1);//$("#sharedata")[0];	
+		
+		if (!inPhone) 
+			$("#btnLeft").hide();
+		
+		winshare.init(div);
+		shareService.getShareData(shareid,function(rtn){
+			var shareInfo=rtn.sharedata;
+			loginService.autoLogin(shareInfo.touser.dbname,"","",function(rtn){
+				shareService.init(function(v){});
+				dataService=serviceFactory.getService("Data.DataService",function(){
+				
+					var dataname=dataInfo.id;
+					var type="";
+					var person=null;
+			        if (dataname=="Income" || dataname=="Invoice" ) {
+			            type="Customer";
+			            person=data.customer;
+			        }
+			        if (dataname=="Expenditure" || dataname=="Purchase" ) { 
+			            type="Supplier";
+			            person=data.supplier;
+			        }
+					if (!person.id) person.id=person._id;
+					if (!person.id) person.id="1";
+					loadPersonData(type, person);
+					winshare.show();
+				
+				});
+			});
+			
+			var data=rtn.value;
+			var dataInfo=data_Scheme[shareInfo.mydataname];
+			
+			winshare.load(dataInfo);
+			winshare.shareInfo=shareInfo;
+			winshare.loadData(data);
+			winshare.onclose=function(){
+				openCusFlow();
+			}
+		});
+	}
+	
+	function loadPersonData(type, person){
+		
+		var dataInfo=data_Scheme[type];
+		var divitem=dui.getDataDom("div","divPerson","listitem",(document.documentElement.clientWidth-300)/2,10,300,54,1);
+		dPerson=divitem;
+		divitem.data=person;
+		divitem.dataInfo=dataInfo;
+		divitem.onclick=function(){
+			openCusFlow();
+		}
+		dataService.getDataByField(type,"phone",person.phone,function(rtn){
+			divitem.style.backgroundColor="rgba(250,250,250,0.3)";
+			divitem.getItem=function(){
+				var controls=dataInfo.UIModel.getListItem(rtn.value);
+				for(var c=0;c<controls.length;c++){
+					var ct=controls[c];
+					divitem.appendChild(controls[c]);
+				}
+			}
+			divitem.style.color="rgba(0,0,0,0.6)";
+			divitem.data=rtn.value;
+			divitem.dataInfo=dataInfo;
+			divitem.getItem();
+		});
+
+	}
+
+	function init(){
+		
+		var btnRight=$("#btnRight")[0];
+		var btnLeft=$("#btnLeft")[0];
+
+		if (inPhone){
+			btnLeft.style.display="";
+			btnLeft.textContent="返回";
+			btnLeft.onclick=function(){
+				api.closeFrame({name: 'message'});
+			}
+		}else{
+			btnLeft.hide();
+			btnRight.hide();
+			btnLeft.style.top="-2000px";
+			btnRight.style.top="-2000px";
+		}
+		
+		req=GetRequest();
+		
+		$.alert(JSON.stringify(req));
+		
+		shareService=serviceFactory.getService("Data.ShareService");
+		loginService=serviceFactory.getService("login.Login");
+		var scheme=serviceFactory.getService("Data.Scheme",function(){
+			scheme.getDataScheme(function(scheme){
+				data_Scheme=scheme
+				initUIModel(data_Scheme);
+
+				data_UI.Supplier={id:"Payable",name:"应付",money:0,data1:data_Scheme.Purchase,data2:data_Scheme.Expenditure};
+				data_UI.Customer={id:"Receivable",name:"应收",money:0,data1:data_Scheme.Income,data2:data_Scheme.Invoice}
+				data_UI.Payable=data_UI.Supplier;
+				data_UI.Receivable=data_UI.Customer;
+				
+				loadScheme=true;
+				if (req.sid){
+					openShareData(req.sid);
+				}else if(req.fromuser){
+					var dname="";
+					if (req.dataname=="Receivable" || req.dataname=="Customer") 
+						dname="Payable";
+					else
+						dname="Receivable";
+						
+					dataInfo=data_UI[dname];
+					openFlowData(req.fromuser,req.touser,dataInfo);
+				}
+			});
+		});
+	}
+	function GetRequest() { 
+		var url = location.search; //获取url中"?"符后的字串 
+		var theRequest = new Object(); 
+		if (url.indexOf("?") != -1) { 
+			var str = url.substr(1); 
+			strs = str.split("&"); 
+			for(var i = 0; i < strs.length; i ++) { 
+				theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+			} 
+		} 
+		return theRequest; 
+	}
+    apiready = function(){
+		
+    };
+</script>
+</html>
